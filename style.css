@@ -1,0 +1,281 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    --primary-color: #6a1b9a; /* Morado corporativo de Orbitravel */
+    --secondary-color: #8e24aa;
+    --text-color: #333;
+    --bg-color: #f4f6f8;
+    --white: #fff;
+    --border-color: #e0e0e0;
+    --success-color: #2e7d32;
+    --gray-light: #f1f1f1;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 1rem 2rem;
+    text-align: center;
+}
+
+.app-container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+#wizard {
+    flex: 3;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+#sidebar {
+    flex: 1;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    height: fit-content;
+}
+
+/* Indicador de Pasos */
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.step-label {
+    padding: 0.5rem 1rem;
+    color: #999;
+    font-weight: 500;
+    position: relative;
+}
+
+.step-label.active {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.step-label.active::after, .step-label.completed::after {
+    content: '';
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+.step-label.completed {
+    color: var(--success-color);
+}
+.step-label.completed::after {
+    background-color: var(--success-color);
+}
+
+
+/* Estilos de Pasos y Formulario */
+.step {
+    display: none;
+}
+.step.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#contract-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+}
+
+#contract-form input[type="text"],
+#contract-form input[type="number"],
+#contract-form input[type="date"],
+#contract-form select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+#contract-form input:read-only {
+    background-color: var(--gray-light);
+    cursor: not-allowed;
+}
+
+.date-picker-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    padding: 0.3rem 0.8rem;
+    border-radius: 16px;
+    font-size: 0.9rem;
+}
+
+.checkbox-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+}
+.checkbox-container label {
+    font-weight: 400;
+}
+
+/* Botones de Navegación */
+.navigation-buttons {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.navigation-buttons button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+#prev-btn {
+    background-color: #ccc;
+    color: var(--text-color);
+}
+#next-btn, #generate-pdf-btn {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+.navigation-buttons button:disabled {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+}
+
+.navigation-buttons button:not(:disabled):hover {
+    transform: translateY(-2px);
+}
+#next-btn:hover, #generate-pdf-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Barra Lateral */
+.sidebar-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px dashed var(--border-color);
+}
+.sidebar-section:last-child {
+    border-bottom: none;
+}
+.sidebar-section h3, .sidebar-section h4 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+.sidebar-section p {
+    margin: 0.2rem 0;
+}
+.sidebar-section span {
+    color: #555;
+    font-weight: 500;
+}
+.total-section .total-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--success-color);
+}
+
+
+/* Estilos para la tabla de pagos */
+.payment-table {
+    width: 100%;
+    margin-top: 1rem;
+    border-collapse: collapse;
+}
+.payment-table th, .payment-table td {
+    border: 1px solid var(--border-color);
+    padding: 0.8rem;
+    text-align: left;
+}
+.payment-table th {
+    background-color: var(--gray-light);
+    font-weight: 500;
+}
+
+/* Estilos para la vista previa del PDF */
+#pdf-preview {
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    margin-top: 1rem;
+}
+.pdf-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.pdf-logo {
+    max-width: 150px;
+    margin-bottom: 1rem;
+}
+.pdf-section {
+    margin-bottom: 1.5rem;
+}
+.pdf-section h4 {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+.pdf-footer {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: space-around;
+}
+.signature-box {
+    text-align: center;
+}
+.terms {
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+}
