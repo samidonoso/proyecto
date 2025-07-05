@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbitravel Contract Builder</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Librería para generar el PDF desde HTML -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Orbitravel Contract Builder</h1>
+        <p>Herramienta interna para la generación de contratos de viaje.</p>
+    </header>
+
+    <main class="app-container">
+        <div id="wizard">
+            <!-- Indicador de Pasos -->
+            <div class="step-indicator">
+                <span class="step-label active" data-step="1">1. Cliente</span>
+                <span class="step-label" data-step="2">2. Paquete</span>
+                <span class="step-label" data-step="3">3. Pagos</span>
+                <span class="step-label" data-step="4">4. Resumen</span>
+            </div>
+
+            <form id="contract-form">
+                <!-- Paso 1: Información del Cliente -->
+                <div class="step active" data-step="1">
+                    <h2>Información del Cliente y Grupo</h2>
+                    <label for="clientName">Nombre del Titular del Contrato:</label>
+                    <input type="text" id="clientName" required>
+
+                    <label for="clientRUT">RUT del Titular:</label>
+                    <input type="text" id="clientRUT" required>
+                    
+                    <label for="passengerCount">Número Total de Pasajeros:</label>
+                    <input type="number" id="passengerCount" min="1" value="1" required>
+                </div>
+
+                <!-- Paso 2: Detalles del Paquete -->
+                <div class="step" data-step="2">
+                    <h2>Detalles del Paquete de Viaje</h2>
+                    <label for="packageSelector">Seleccionar Paquete de Viaje:</label>
+                    <select id="packageSelector">
+                        <option value="">-- Seleccione un paquete --</option>
+                        <option value="euro">Eurotravesía Mixta</option>
+                        <option value="machu">Grupal Machu Picchu</option>
+                        <option value="rapa-nui">Grupal Rapa Nui</option>
+                    </select>
+
+                    <label>Fechas del Viaje:</label>
+                    <div class="date-picker-group">
+                        <input type="date" id="startDate">
+                        <span>a</span>
+                        <input type="date" id="endDate">
+                    </div>
+
+                    <div id="package-details">
+                        <h3>Destinos Incluidos:</h3>
+                        <div id="packageDestinations" class="tag-container"></div>
+                        <h3>Inclusiones del Paquete:</h3>
+                        <div id="packageInclusions" class="checkbox-container"></div>
+                    </div>
+                </div>
+
+                <!-- Paso 3: Plan de Pagos -->
+                <div class="step" data-step="3">
+                    <h2>Cálculo y Plan de Pagos</h2>
+                    <label for="totalCost">Costo Total del Viaje (CLP):</label>
+                    <input type="text" id="totalCost" readonly>
+
+                    <label for="downPayment">Monto del Abono Inicial (CLP):</label>
+                    <input type="number" id="downPayment" min="0">
+
+                    <label for="balanceDue">Saldo a Pagar (CLP):</label>
+                    <input type="text" id="balanceDue" readonly>
+
+                    <label for="installments">Número de Cuotas:</label>
+                    <select id="installments">
+                        <option value="1">1 Cuota</option>
+                        <option value="2">2 Cuotas</option>
+                        <option value="3">3 Cuotas</option>
+                        <option value="4">4 Cuotas</option>
+                        <option value="6">6 Cuotas</option>
+                        <option value="12">12 Cuotas</option>
+                    </select>
+
+                    <label for="installmentAmount">Monto por Cuota (CLP):</label>
+                    <input type="text" id="installmentAmount" readonly>
+                    
+                    <h3>Tabla de Pagos Propuesta:</h3>
+                    <div id="payment-table-container"></div>
+                </div>
+
+                <!-- Paso 4: Resumen y Generación -->
+                <div class="step" data-step="4">
+                    <h2>Resumen Final y Generación de Contrato</h2>
+                    <p>Revise todos los detalles antes de generar el documento final.</p>
+                    <div id="pdf-preview">
+                        <!-- Esta sección es la que se convertirá en PDF -->
+                        <div class="pdf-header">
+                            <img src="https://i.imgur.com/uV32a1n.png" alt="Orbitravel Logo" class="pdf-logo">
+                            <h3>CONTRATO PRESTACIÓN DE SERVICIOS</h3>
+                        </div>
+                        <div class="pdf-section">
+                            <h4>I. PARTES</h4>
+                            <p><strong>Prestador:</strong> ORBITRAVEL SPA, RUT: 77.811.914-5</p>
+                            <p><strong>Cliente:</strong> <span id="summary-clientName"></span>, RUT: <span id="summary-clientRUT"></span></p>
+                        </div>
+                        <div class="pdf-section">
+                            <h4>II. DETALLES DEL VIAJE</h4>
+                            <p><strong>Paquete:</strong> <span id="summary-packageName"></span></p>
+                            <p><strong>Fechas:</strong> <span id="summary-dates"></span></p>
+                            <p><strong>Nº Pasajeros:</strong> <span id="summary-passengers"></span></p>
+                            <p><strong>Destinos:</strong> <span id="summary-destinations"></span></p>
+                        </div>
+                        <div class="pdf-section">
+                            <h4>III. COSTOS Y PLAN DE PAGO</h4>
+                            <p><strong>Costo Total:</strong> CLP <span id="summary-totalCost"></span></p>
+                            <p><strong>Abono Inicial:</strong> CLP <span id="summary-downPayment"></span></p>
+                            <p><strong>Saldo a Pagar en <span id="summary-installments-count"></span> cuota(s) de:</strong> CLP <span id="summary-installmentAmount"></span> c/u</p>
+                            <div id="summary-payment-schedule"></div>
+                        </div>
+                         <div class="pdf-section">
+                            <h4>IV. TÉRMINOS Y CONDICIONES</h4>
+                            <p class="terms">Se aplican los términos y condiciones estándar de Orbitravel SPA según las políticas de cancelación, devolución y responsabilidad del cliente. Este documento es un resumen del acuerdo. Las cláusulas completas se adjuntarán al contrato final. El cliente declara conocer y aceptar dichas condiciones.</p>
+                        </div>
+                        <div class="pdf-footer">
+                            <div class="signature-box">
+                                <p>_________________________</p>
+                                <p>Firma Orbitravel SPA</p>
+                            </div>
+                            <div class="signature-box">
+                                <p>_________________________</p>
+                                <p>Firma Cliente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Botones de Navegación -->
+            <div class="navigation-buttons">
+                <button id="prev-btn" disabled>Anterior</button>
+                <button id="next-btn">Siguiente</button>
+                <button id="generate-pdf-btn" style="display: none;">Generar Contrato en PDF</button>
+            </div>
+        </div>
+
+        <aside id="sidebar">
+            <div class="sidebar-section">
+                <h3>Resumen en Vivo</h3>
+            </div>
+            <div class="sidebar-section" id="sidebar-client">
+                <h4>Cliente</h4>
+                <p><strong>Nombre:</strong> <span id="sidebar-client-name">N/A</span></p>
+                <p><strong>Pasajeros:</strong> <span id="sidebar-passengers">N/A</span></p>
+            </div>
+            <div class="sidebar-section" id="sidebar-package">
+                <h4>Paquete</h4>
+                <p><strong>Nombre:</strong> <span id="sidebar-package-name">N/A</span></p>
+                <p><strong>Fechas:</strong> <span id="sidebar-dates">N/A</span></p>
+            </div>
+            <div class="sidebar-section" id="sidebar-payment">
+                <h4>Plan de Pago</h4>
+                <p><strong>Abono:</strong> <span id="sidebar-downpayment">CLP 0</span></p>
+                <p><strong>Cuotas:</strong> <span id="sidebar-installments">N/A</span></p>
+            </div>
+            <div class="sidebar-section total-section">
+                <h4>Costo Total</h4>
+                <p class="total-amount"><span id="sidebar-total-cost">CLP 0</span></p>
+            </div>
+        </aside>
+    </main>
+    
+    <script src="script.js"></script>
+</body>
+</html>
